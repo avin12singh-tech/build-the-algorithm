@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Build the Algorithm</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+/* global font */
+* {
+    font-family: 'Outfit', sans-serif;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background-color: #f2f1e8;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    background-color: #318ec3;
+    color: #f9f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 700;
+}
+
+.scenario {
+    background-color: #e8d227;
+    color: #232323;
+    padding: 10px;
+    border-radius: 6px;
+    margin: 10px 0;
+    text-align: center;
+    font-weight: 600;
+}
+
+.instructions {
+    background-color: #e8d227;
+    color: #232323;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.instructions ul {
+    margin: 5px 0 10px 20px;
+}
+
+.instructions li {
+    margin-bottom: 4px;
+}
+
+.flex {
+    display: flex;
+    gap: 20px;
+}
+
+.step-bank {
+    width: 40%;
+    background-color: #318ec3;
+    padding: 10px;
+    border-radius: 8px;
+    color: #f9f9fa;
+}
+
+.drop-area {
+    width: 60%;
+    background-color: #e8d227;
+    padding: 10px;
+    border-radius: 8px;
+    color: #232323;
+}
+
+.step {
+    background-color: #f9f9fa;
+    color: #232323;
+    padding: 10px;
+    margin: 6px 0;
+    border-radius: 6px;
+    cursor: grab;
+    font-weight: 500;
+}
+
+.drop-box {
+    background-color: #f2f1e8;
+    border: 2px dashed #232323;
+    height: 45px;
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    border-radius: 6px;
+}
+
+/* feedback borders */
+.correct {
+    border: 2px solid green !important;
+}
+
+.wrong {
+    border: 2px solid red !important;
+}
+
+/* buttons */
+.button-group {
+    text-align: center;
+    margin-top: 20px;
+}
+
+button {
+    margin: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #318ec3;
+    color: #f9f9fa;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+#resetBtn {
+    background-color: #e8d227;
+    color: #232323;
+}
+
+#feedback {
+    text-align: center;
+    font-weight: 600;
+    margin-top: 10px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Build the algorithm</h1>
+
+    <div class="scenario">
+        Scenario: A person is crossing the road using a traffic signal.
+    </div>
+
+    <div class="instructions">
+        <strong>Task:</strong>
+        <ul>
+            <li>Drag and select the correct steps.</li>
+            <li>Arrange the steps in the correct order.</li>
+        </ul>
+
+        <strong>Important:</strong>
+        <ul>
+            <li>Ignore incorrect or unnecessary steps.</li>
+            <li>Check if the steps give the correct result.</li>
+        </ul>
+
+        <strong>Submit:</strong>
+        <ul>
+            <li>Click Submit to check your answer.</li>
+        </ul>
+    </div>
+
+    <div class="flex">
+
+        <div class="step-bank">
+            <h3>Step bank</h3>
+            <div id="steps-container"></div>
+        </div>
+
+        <div class="drop-area">
+            <h3>Build your algorithm</h3>
+
+            <div class="drop-box"></div>
+            <div class="drop-box"></div>
+            <div class="drop-box"></div>
+            <div class="drop-box"></div>
+            <div class="drop-box"></div>
+            <div class="drop-box"></div>
+            <div class="drop-box"></div>
+
+        </div>
+
+    </div>
+
+    <div class="button-group">
+        <button onclick="checkAnswer()">Submit</button>
+        <button id="resetBtn" onclick="resetBoxes()">Reset</button>
+    </div>
+
+    <div id="feedback"></div>
+
+</div>
+
+<script>
+
+const steps = [
+    "Start",
+    "Look at the signal",
+    "IF signal = red THEN",
+    "stop and wait",
+    "ELSE",
+    "Move forward",
+    "End",
+    "Turn left",
+    "signal = signal + 1",
+    "IF signal = pink THEN",
+    "count = count − 1"
+];
+
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+const container = document.getElementById("steps-container");
+shuffle(steps);
+
+steps.forEach(text => {
+    let div = document.createElement("div");
+    div.className = "step";
+    div.innerText = text;
+    div.draggable = true;
+    container.appendChild(div);
+});
+
+let draggedItem = null;
+
+document.addEventListener('dragstart', function(e) {
+    if (e.target.classList.contains('step')) {
+        draggedItem = e.target;
+    }
+});
+
+document.querySelectorAll('.drop-box').forEach(box => {
+
+    box.addEventListener('dragover', (e) => {
+        e.preventDefault();
+    });
+
+    box.addEventListener('drop', () => {
+
+        if (!draggedItem) return;
+
+        if (box.children.length === 0) {
+            box.appendChild(draggedItem);
+        }
+    });
+});
+
+/* check with visual feedback */
+function checkAnswer() {
+
+    const correct = [
+        "Start",
+        "Look at the signal",
+        "IF signal = red THEN",
+        "stop and wait",
+        "ELSE",
+        "Move forward",
+        "End"
+    ];
+
+    let user = [];
+
+    const boxes = document.querySelectorAll('.drop-box');
+
+    boxes.forEach((box, index) => {
+
+        box.classList.remove("correct", "wrong");
+
+        if (box.children.length > 0) {
+
+            let value = box.children[0].innerText;
+            user.push(value);
+
+            if (value === correct[index]) {
+                box.classList.add("correct");
+            } else {
+                box.classList.add("wrong");
+            }
+
+        }
+    });
+
+    const feedback = document.getElementById("feedback");
+
+    if (JSON.stringify(user) === JSON.stringify(correct)) {
+        feedback.style.color = "green";
+        feedback.innerText = "Well done! The steps are in the correct order.";
+    } else {
+        feedback.style.color = "red";
+        feedback.innerText = "Check the steps again. Remove incorrect steps and reorder.";
+    }
+}
+
+/* reset */
+function resetBoxes() {
+
+    const container = document.getElementById("steps-container");
+
+    document.querySelectorAll('.drop-box').forEach(box => {
+
+        box.classList.remove("correct", "wrong");
+
+        while (box.firstChild) {
+            container.appendChild(box.firstChild);
+        }
+    });
+
+    document.getElementById("feedback").innerText = "";
+}
+
+</script>
+
+</body>
+</html>
